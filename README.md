@@ -44,3 +44,4 @@ Open http://localhost:5173 in your browser.
 - ✅ Basic chat interface with Claude API
 - ✅ Socratic dialogue about circle rotations in SO(3)
 
+
