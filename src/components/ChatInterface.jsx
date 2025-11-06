@@ -1,72 +1,64 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
-const SYSTEM_PROMPT = `You are Hypatia, named after the ancient mathematician and philosopher. 
-
-Your teaching method:
-- NEVER give direct answers
-- Ask leading questions that build intuition
-- Connect abstract math to physical experience
-- Celebrate student insights: "Yes! Exactly!"
-
-You're teaching group theory through visualization:
-- SO(3): the space of 3D rotations
-- The student is looking at a glowing circle rotating in 3D space with a particle trail
-
-The question is: "How many different ways can you rotate a circle in 3D space?"
-
-When student struggles:
-- Ask simpler questions
-- Reference the visualization: "Look at what's happening..."
-- Build on what they already know
-
-When student has breakthrough:
-- Acknowledge specifically what they figured out
-- Connect to bigger picture
-- Show them they just understood "advanced" math
-
-Tone: Warm, curious, intellectually rigorous but accessible. You're excited about math and want students to feel that excitement too.`
+const SCRIPT = [
+  {
+    role: 'user',
+    content: 'My teacher says I have to find a palindrome number. Can you tell me a palindrome number?',
+    delay: 4.6,
+  },
+  {
+    role: 'assistant',
+    content:
+      "I could tell you one, but what if I showed you something more interesting? What do you think makes a number a palindrome?",
+    delay: 6.8,
+  },
+  {
+    role: 'user',
+    content: 'It reads the same backwards?',
+    delay: 6.2,
+  },
+  {
+    role: 'assistant',
+    content: 'Exactly! Watch these colored orbs...',
+    delay: 7.2,
+    triggerOrbSequence: true,
+  },
+  {
+    role: 'assistant',
+    content:
+      "See how we started at red, went to blue, then back to red? That's symmetry - just like a palindrome!",
+    delay: 8,
+  },
+]
 
 export default function ChatInterface() {
-  const [messages, setMessages] = useState([
-    {
-      role: 'assistant',
-      content: "Hello! I'm Hypatia. Look at the circle rotating in 3D space. How many different ways can you rotate a circle in 3D space? What do you think?"
+  const [messages, setMessages] = useState([])
+  const timeoutsRef = useRef([])
+
+  useEffect(() => {
+    const scheduleStep = (index) => {
+      if (index >= SCRIPT.length) return
+      const step = SCRIPT[index]
+
+      const timeoutId = window.setTimeout(() => {
+        setMessages((prev) => [...prev, { role: step.role, content: step.content }])
+        if (step.triggerOrbSequence) {
+          window.dispatchEvent(new Event('hypatia-orb-sequence'))
+        }
+        scheduleStep(index + 1)
+      }, step.delay * 1000)
+
+      timeoutsRef.current.push(timeoutId)
     }
-  ])
-  const [input, setInput] = useState('')
-  const [isLoading, setIsLoading] = useState(false)
 
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-    if (!input.trim() || isLoading) return
+    const initialTimeout = window.setTimeout(() => scheduleStep(0), 400)
+    timeoutsRef.current.push(initialTimeout)
 
-    const userMessage = { role: 'user', content: input }
-    setMessages(prev => [...prev, userMessage])
-    setInput('')
-    setIsLoading(true)
-
-    try {
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          messages: [...messages, userMessage],
-          systemPrompt: SYSTEM_PROMPT
-        })
-      })
-
-      const data = await response.json()
-      setMessages(prev => [...prev, { role: 'assistant', content: data.message }])
-    } catch (error) {
-      console.error('Error:', error)
-      setMessages(prev => [...prev, { 
-        role: 'assistant', 
-        content: 'Sorry, I encountered an error. Please try again.' 
-      }])
-    } finally {
-      setIsLoading(false)
+    return () => {
+      timeoutsRef.current.forEach((id) => window.clearTimeout(id))
+      timeoutsRef.current = []
     }
-  }
+  }, [])
 
   return (
     <div className="flex flex-col h-full">
@@ -94,27 +86,18 @@ export default function ChatInterface() {
             </div>
           </div>
         ))}
-        {isLoading && (
-          <div className="text-left">
-            <div className="inline-block p-3 rounded-lg bg-gray-800 text-gray-400">
-              Thinking...
-            </div>
-          </div>
+        {messages.length === 0 && (
+          <div className="text-gray-500">Loading scripted conversation...</div>
         )}
       </div>
 
-      <form onSubmit={handleSubmit} className="p-4 border-t border-gray-800">
-        <input
-          type="text"
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          placeholder="Type your answer or question..."
-          className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-lg text-white placeholder-gray-500 focus:outline-none focus:border-blue-500"
-          disabled={isLoading}
-        />
-      </form>
+      <div className="p-4 border-t border-gray-800 text-sm text-gray-500">
+        Scripted demo conversation. User input disabled for this prototype.
+      </div>
     </div>
   )
 }
+
+
 
 

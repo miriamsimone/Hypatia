@@ -45,3 +45,5 @@ Open http://localhost:5173 in your browser.
 - ✅ Socratic dialogue about circle rotations in SO(3)
 
 
+
+
