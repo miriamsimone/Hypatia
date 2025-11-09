@@ -147,9 +147,12 @@ function GroupTheoryScene({ spinEnabled = false }) {
 
     // Listen for group theory animation events from chat
     const handleGroupTheoryAnimation = (event) => {
+      console.log('🎬 Animation event received from chat:', event.detail)
       const { moves } = event.detail
       if (moves && Array.isArray(moves)) {
         animateSequence(moves)
+      } else {
+        console.log('⚠️ Invalid moves in event:', moves)
       }
     }
 
@@ -309,8 +312,11 @@ function GroupTheoryScene({ spinEnabled = false }) {
     const startTime = Date.now()
     const duration = 500 // ms
 
+    // Normalize move to lowercase
+    const normalizedMove = move.toLowerCase()
+
     // Handle spin move
-    if (move === 'S') {
+    if (normalizedMove === 's') {
       const startRotation = robot.rotation.y
       const endRotation = startRotation + Math.PI
 
@@ -338,14 +344,14 @@ function GroupTheoryScene({ spinEnabled = false }) {
       return
     }
 
-    // Handle L/R moves with orientation
+    // Handle a/b moves with orientation
     const startX = robot.position.x
     let direction = 0
 
-    // When facing backward, L and R are reversed
-    if (move === 'L') {
+    // When facing backward, a and b are reversed
+    if (normalizedMove === 'a') {
       direction = currentOrientation ? 1 : -1 // backward: +1, forward: -1
-    } else if (move === 'R') {
+    } else if (normalizedMove === 'b') {
       direction = currentOrientation ? -1 : 1 // backward: -1, forward: +1
     }
 
@@ -385,41 +391,61 @@ function GroupTheoryScene({ spinEnabled = false }) {
   }
 
   const animateSequence = (moves) => {
-    if (!Array.isArray(moves) || moves.length === 0 || isAnimating) return
+    if (!Array.isArray(moves) || moves.length === 0) {
+      console.log('⚠️ animateSequence called with invalid moves:', moves)
+      return
+    }
 
+    if (isAnimating) {
+      console.log('⚠️ Animation already in progress, ignoring new sequence:', moves)
+      return
+    }
+
+    console.log('▶️ Starting animation sequence:', moves.join(''), `(${moves.length} moves)`)
     setIsAnimating(true)
     let currentIndex = 0
     let currentOrientation = isFacingBackward
 
     const animateNext = () => {
       if (currentIndex >= moves.length) {
+        console.log('✅ Animation sequence complete')
         setIsAnimating(false)
         return
       }
 
-      const move = moves[currentIndex].toUpperCase()
+      const move = moves[currentIndex].toLowerCase()
+      console.log(`  Move ${currentIndex + 1}/${moves.length}: ${move}`)
       currentIndex++
 
-      if (move === 'S') {
+      if (move === 's') {
         // Spin doesn't change position, only orientation
-        setMoveSequence(seq => [...seq, 'S'])
+        setMoveSequence(seq => [...seq, 's'])
         currentOrientation = !currentOrientation
         setIsFacingBackward(currentOrientation)
-        animateStep('S', currentOrientation, animateNext)
-      } else if (move === 'L') {
-        // L direction depends on orientation
+        animateStep('s', currentOrientation, animateNext)
+      } else if (move === 'a') {
+        // a direction depends on orientation
         const posChange = currentOrientation ? 1 : -1
-        setPosition(pos => pos + posChange)
-        setMoveSequence(seq => [...seq, 'L'])
-        animateStep('L', currentOrientation, animateNext)
-      } else if (move === 'R') {
-        // R direction depends on orientation
+        console.log(`    Position change: ${posChange} (orientation: ${currentOrientation ? 'backward' : 'forward'})`)
+        setPosition(pos => {
+          console.log(`    Position: ${pos} → ${pos + posChange}`)
+          return pos + posChange
+        })
+        setMoveSequence(seq => [...seq, 'a'])
+        animateStep('a', currentOrientation, animateNext)
+      } else if (move === 'b') {
+        // b direction depends on orientation
         const posChange = currentOrientation ? -1 : 1
-        setPosition(pos => pos + posChange)
-        setMoveSequence(seq => [...seq, 'R'])
-        animateStep('R', currentOrientation, animateNext)
+        console.log(`    Position change: ${posChange} (orientation: ${currentOrientation ? 'backward' : 'forward'})`)
+        setPosition(pos => {
+          console.log(`    Position: ${pos} → ${pos + posChange}`)
+          return pos + posChange
+        })
+        setMoveSequence(seq => [...seq, 'b'])
+        animateStep('b', currentOrientation, animateNext)
       } else {
         // Skip invalid moves
+        console.log(`    Skipping invalid move: ${move}`)
         animateNext()
       }
     }
@@ -427,111 +453,38 @@ function GroupTheoryScene({ spinEnabled = false }) {
     animateNext()
   }
 
-  const handleLeft = () => {
-    if (isAnimating) return
-    setIsAnimating(true)
-    const posChange = isFacingBackward ? 1 : -1
-    setPosition(pos => pos + posChange)
-    setMoveSequence(seq => [...seq, 'L'])
-    animateStep('L', isFacingBackward, () => setIsAnimating(false))
-  }
-
-  const handleRight = () => {
-    if (isAnimating) return
-    setIsAnimating(true)
-    const posChange = isFacingBackward ? -1 : 1
-    setPosition(pos => pos + posChange)
-    setMoveSequence(seq => [...seq, 'R'])
-    animateStep('R', isFacingBackward, () => setIsAnimating(false))
-  }
-
-  const handleSpin = () => {
-    if (isAnimating) return
-    setIsAnimating(true)
-    setIsFacingBackward(prev => !prev)
-    setMoveSequence(seq => [...seq, 'S'])
-    animateStep('S', isFacingBackward, () => setIsAnimating(false))
-  }
-
-  const handleReset = () => {
-    if (isAnimating) return
-    setPosition(0)
-    setMoveSequence([])
-    setIsFacingBackward(false)
-    if (robotRef.current) {
-      robotRef.current.position.x = 0
-      robotRef.current.rotation.y = 0
-    }
-  }
 
   return (
     <div className="w-full h-full flex flex-col">
-      {/* Controls at top */}
-      <div className="p-3 bg-gray-900 flex flex-col gap-2 border-b border-gray-800 shrink-0">
-        {/* Move sequence and position in one row */}
-        <div className="flex gap-2">
-          <div className="flex-1 bg-gray-800/90 rounded-lg p-2">
-            <div className="text-xs text-gray-400 mb-1">Sequence:</div>
-            <div className="flex gap-1 flex-wrap min-h-[24px]">
-              {moveSequence.length === 0 ? (
-                <span className="text-xs text-gray-500 italic">No moves</span>
-              ) : (
-                moveSequence.map((move, idx) => (
-                  <span
-                    key={idx}
-                    className="px-1.5 py-0.5 bg-cyan-500/20 text-cyan-300 rounded font-mono text-xs"
-                  >
-                    {move}
-                  </span>
-                ))
-              )}
-            </div>
-          </div>
-
-          <div className="bg-gray-800/90 rounded-lg p-2 min-w-[100px]">
-            <div className="text-xs text-gray-400 mb-1">Position:</div>
-            <div className="text-2xl font-bold text-cyan-400 font-mono">{position}</div>
+      {/* Status display at top */}
+      <div className="p-3 bg-gray-900 flex gap-2 border-b border-gray-800 shrink-0">
+        <div className="flex-1 bg-gray-800/90 rounded-lg p-2">
+          <div className="text-xs text-gray-400 mb-1">Current Sequence:</div>
+          <div className="flex gap-1 flex-wrap min-h-[24px]">
+            {moveSequence.length === 0 ? (
+              <span className="text-xs text-gray-500 italic">e (identity)</span>
+            ) : (
+              moveSequence.map((move, idx) => (
+                <span
+                  key={idx}
+                  className="px-1.5 py-0.5 bg-cyan-500/20 text-cyan-300 rounded font-mono text-xs"
+                >
+                  {move === 'b' ? 'a⁻¹' : move}
+                </span>
+              ))
+            )}
           </div>
         </div>
 
-        {/* Control buttons */}
-        <div className="flex gap-2">
-          <button
-            onClick={handleLeft}
-            className="flex-1 bg-cyan-500 hover:bg-cyan-600 disabled:bg-gray-600 text-white font-bold py-3 px-4 rounded-lg transition-colors"
-            disabled={isAnimating}
-          >
-            L
-          </button>
-          <button
-            onClick={handleRight}
-            className="flex-1 bg-cyan-500 hover:bg-cyan-600 disabled:bg-gray-600 text-white font-bold py-3 px-4 rounded-lg transition-colors"
-            disabled={isAnimating}
-          >
-            R
-          </button>
-          {spinEnabled && (
-            <button
-              onClick={handleSpin}
-              className="flex-1 bg-purple-500 hover:bg-purple-600 disabled:bg-gray-600 text-white font-bold py-3 px-4 rounded-lg transition-colors"
-              disabled={isAnimating}
-            >
-              S
-            </button>
-          )}
-          <button
-            onClick={handleReset}
-            className="bg-red-500 hover:bg-red-600 disabled:bg-gray-600 text-white font-bold py-3 px-4 rounded-lg transition-colors"
-            disabled={isAnimating}
-          >
-            Reset
-          </button>
+        <div className="bg-gray-800/90 rounded-lg p-2 min-w-[100px]">
+          <div className="text-xs text-gray-400 mb-1">Position:</div>
+          <div className="text-2xl font-bold text-cyan-400 font-mono">{position}</div>
         </div>
 
         {/* Orientation indicator (only show when spin enabled) */}
         {spinEnabled && (
           <div className="bg-gray-800/90 rounded-lg p-2">
-            <div className="text-xs text-gray-400">Facing:</div>
+            <div className="text-xs text-gray-400 mb-1">Facing:</div>
             <div className="text-sm font-bold" style={{ color: isFacingBackward ? '#ff6b9d' : '#6bff9d' }}>
               {isFacingBackward ? 'Backward ←' : 'Forward →'}
             </div>
