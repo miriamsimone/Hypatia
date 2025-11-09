@@ -260,45 +260,76 @@ function updateStarField(starField, elapsed) {
 function createDynamicGrid() {
   const group = new THREE.Group()
   group.visible = false
-  group.position.set(0, 0, -3)
-  group.rotation.set(THREE.MathUtils.degToRad(-12), THREE.MathUtils.degToRad(36), 0)
+  group.position.set(0, 0, -2)
+  group.rotation.set(THREE.MathUtils.degToRad(-10), THREE.MathUtils.degToRad(32), 0)
 
-  const size = 18
-  const divisions = 18
-  const halfSize = size / 2
-  const step = size / divisions
+  const coreSize = 6.5
+  const coreDivisions = 12
+  const falloffSize = 10
+  const falloffDivisions = 8
 
   const positions = []
+  const colors = []
 
-  for (let yi = 0; yi <= divisions; yi++) {
-    const y = -halfSize + yi * step
-    for (let zi = 0; zi <= divisions; zi++) {
-      const z = -halfSize + zi * step
-      positions.push(-halfSize, y, z, halfSize, y, z)
-    }
+  const pushLine = (start, end, strength) => {
+    positions.push(start.x, start.y, start.z, end.x, end.y, end.z)
+    const colorStrength = THREE.MathUtils.clamp(strength, 0, 1)
+    const color = new THREE.Color(0x5ed9ff).lerp(new THREE.Color(0x0b1c2d), 1 - colorStrength)
+    colors.push(color.r, color.g, color.b, color.r, color.g, color.b)
   }
 
-  for (let xi = 0; xi <= divisions; xi++) {
-    const x = -halfSize + xi * step
-    for (let zi = 0; zi <= divisions; zi++) {
-      const z = -halfSize + zi * step
-      positions.push(x, -halfSize, z, x, halfSize, z)
-    }
-  }
+  const buildLayer = (size, divisions, fadeStart, fadeEnd) => {
+    const half = size / 2
+    const step = size / divisions
+    const start = new THREE.Vector3()
+    const end = new THREE.Vector3()
 
-  for (let xi = 0; xi <= divisions; xi++) {
-    const x = -halfSize + xi * step
     for (let yi = 0; yi <= divisions; yi++) {
-      const y = -halfSize + yi * step
-      positions.push(x, y, -halfSize, x, y, halfSize)
+      const y = -half + yi * step
+      for (let zi = 0; zi <= divisions; zi++) {
+        const z = -half + zi * step
+        start.set(-half, y, z)
+        end.set(half, y, z)
+        const dist = Math.max(Math.abs(y), Math.abs(z))
+        const strength = 1 - THREE.MathUtils.smoothstep(dist, fadeStart, fadeEnd)
+        pushLine(start, end, strength)
+      }
+    }
+
+    for (let xi = 0; xi <= divisions; xi++) {
+      const x = -half + xi * step
+      for (let zi = 0; zi <= divisions; zi++) {
+        const z = -half + zi * step
+        start.set(x, -half, z)
+        end.set(x, half, z)
+        const dist = Math.max(Math.abs(x), Math.abs(z))
+        const strength = 1 - THREE.MathUtils.smoothstep(dist, fadeStart, fadeEnd)
+        pushLine(start, end, strength)
+      }
+    }
+
+    for (let xi = 0; xi <= divisions; xi++) {
+      const x = -half + xi * step
+      for (let yi = 0; yi <= divisions; yi++) {
+        const y = -half + yi * step
+        start.set(x, y, -half)
+        end.set(x, y, half)
+        const dist = Math.max(Math.abs(x), Math.abs(y))
+        const strength = 1 - THREE.MathUtils.smoothstep(dist, fadeStart, fadeEnd)
+        pushLine(start, end, strength)
+      }
     }
   }
+
+  buildLayer(coreSize, coreDivisions, 2.5, 4)
+  buildLayer(falloffSize, falloffDivisions, 3.5, 6.5)
 
   const geometry = new THREE.BufferGeometry()
   geometry.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3))
+  geometry.setAttribute('color', new THREE.Float32BufferAttribute(colors, 3))
 
   const lineMaterial = new THREE.LineBasicMaterial({
-    color: new THREE.Color(0x5ed9ff),
+    vertexColors: true,
     transparent: true,
     opacity: 0,
     blending: THREE.AdditiveBlending,
