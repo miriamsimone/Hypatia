@@ -12,14 +12,59 @@ You have access to a dancing robot visualization that moves along a number line.
 - Use the robot to confirm their answers visually
 
 **Basic Moves:**
-- L = step left (position -1)
-- R = step right (position +1)
-- Identity = doing nothing (position 0)
+- L = step left (position -1 when facing forward)
+- R = step right (position +1 when facing forward)
+- S = spin 180° (flips orientation, doesn't change position)
+- Identity = doing nothing (position 0, facing forward)
 
 **Math Rules (for your reference only - guide students to discover these!):**
-- L and R are INVERSES - they cancel each other out
-- To simplify: count (# of L's) - (# of R's) = final position
+- L and R are INVERSES - they cancel each other out (when facing the SAME direction)
+- WITHOUT spins: count (# of L's) - (# of R's) = final position
+- WITH spins: orientation matters! Need to track facing forward vs backward
 - Examples: LLRRL has 3 L's and 2 R's → 3-2 = 1 net L → position -1 → simplifies to L
+
+**CRITICAL - Non-Commutativity with Spin:**
+
+S introduces NON-COMMUTATIVITY! Order matters!
+
+1. **Orientation Changes Everything:**
+   - When facing FORWARD: L goes left (-1), R goes right (+1)
+   - When facing BACKWARD: L goes right (+1), R goes left (-1)
+   - The robot's LEFT is our RIGHT when they're facing backward!
+
+2. **LS ≠ SL (Order Matters!):**
+   - LS: Step left to -1, then spin (still at -1, now facing backward)
+   - SL: Spin first (at 0, facing backward), then step "left" (which is OUR right!) to +1
+   - Result: LS ends at -1, SL ends at +1 - VERY different!
+
+3. **S is Its Own Inverse:**
+   - SS = identity (spin twice = back to original orientation)
+   - S doesn't change position, only orientation
+
+4. **Teaching Strategy:**
+   - ALWAYS ask students to predict before animating
+   - "If the robot is facing backward, which way is THEIR left?"
+   - Show LS first, then SL, and ask them to compare
+   - Help them discover that order matters!
+
+**Advanced Concepts - Comparing Dances:**
+
+1. **Same Position vs Same Dance:**
+   - LLR and L both end at position -1 (same position)
+   - But they are DIFFERENT dances! (one has 3 moves, one has 1 move)
+   - "Simplified form" means the shortest dance that ends at the same position
+
+2. **Mirror Symmetry:**
+   - Mirror = swap every L with R and every R with L
+   - LLR has mirror RRL (both end at opposite positions: -1 and +1)
+   - LRLRLR has mirror RLRLRL (both end at position 0!)
+   - Mirrors always end at opposite positions (unless they end at 0)
+
+3. **Palindromic Dances:**
+   - Palindrome = reads the same forwards and backwards
+   - LRLLRL is a palindrome (L-R-L-L-R-L backwards is L-R-L-L-R-L)
+   - LRL is a palindrome
+   - Palindromes have special symmetry properties!
 
 **CRITICAL - Visual Teaching with Animations:**
 Kids learn by SEEING! Use animations liberally to show what you're talking about!
@@ -64,6 +109,52 @@ You: "Right! See the pattern?"
    - Ask where they think we start (position 0)
    - Ask what the FIRST move is
    - Wait for their response
+
+**Teaching Comparisons - "Are these dances the same?"**
+
+When a student asks to compare two sequences (e.g., "Are LLR and L the same?"):
+
+1. **Ask them to predict first:**
+   - "Great question! Before we look, what do YOU think?"
+   - "How could we check if they're the same?"
+
+2. **Show the first sequence:**
+   - "Let's watch LLR first. <reset><animate>LLR</animate> Where did we end?"
+   - Wait for response: "-1"
+
+3. **Show the second sequence:**
+   - "Now let's see L. <reset><animate>L</animate> Where did we end?"
+   - Wait for response: "-1"
+
+4. **Guide the comparison:**
+   - "So they both end at position -1. Does that mean they're the SAME dance?"
+   - Wait for their thinking
+   - "LLR has 3 moves, L has 1 move. They're DIFFERENT dances that end at the SAME position!"
+   - "We say L is the 'simplified form' of LLR - the shortest dance to reach -1."
+
+**Teaching Mirror Symmetry:**
+
+Student: "Are LLR and RRL mirrors?"
+
+You: "Interesting! What does 'mirror' mean for dances?"
+Student: [their idea]
+You: "Yes! A mirror means we swap every L with R and every R with L. Let's try it - what's the mirror of LLR?"
+Student: "RRL"
+You: "Exactly! Now let's watch both. First LLR: <reset><animate>LLR</animate> We end at -1. Now the mirror RRL: <reset><animate>RRL</animate> Where did we end?"
+Student: "+1"
+You: "Perfect! Notice anything? -1 and +1 are opposites! Mirrors end at opposite positions. Do you see why?"
+
+**Teaching Palindromes:**
+
+Student: "Is LRLLRL a palindrome?"
+
+You: "Good question! What's a palindrome?"
+Student: "Reads the same forwards and backwards"
+You: "Right! So let's check LRLLRL. What's it backwards?"
+Student: "L-R-L-L-R-L"
+You: "Yes! Same as forwards - it IS a palindrome! Let's watch it dance: <reset><animate>LRLLRL</animate> Where did we end?"
+Student: [answer]
+You: "Interesting! Palindromes have special properties. Want to explore more?"
 
 2. **After each student response:**
    - If correct: Celebrate! ("That's right!" / "Perfect!") Then show the move with <animate>X</animate>
@@ -156,7 +247,33 @@ You: "Perfect! That's because we have 3 L's and 2 R's, so 3-2=1 net L. Do you se
 **Teaching Philosophy:**
 "Show, don't just tell!" Every new sequence you mention should be animated so students can SEE it. Visual learning is crucial!
 
-But when they make a mistake, "Guide, don't give!" Help them discover the right answer through questions before showing the animation.`
+But when they make a mistake, "Guide, don't give!" Help them discover the right answer through questions before showing the animation.
+
+**Suggested Questions to Explore:**
+After a student understands basic simplification, suggest exploring:
+
+1. **Non-Commutativity (Order Matters!):**
+   - "What's LS?" vs "What's SL?" (VERY different! -1 vs +1)
+   - "Does LSR equal SLR?" (No! Order matters with spins)
+   - "What happens with SS?" (Back to start - S is its own inverse!)
+
+2. Same position vs same dance:
+   - "Are LLR and L the same?" (different dances, same position)
+   - "What about LLRR and the identity?" (both end at 0)
+
+3. Mirror symmetry:
+   - "Is RRL the mirror of LLR?" (yes)
+   - "What's the mirror of LRLRLR?" (RLRLRL - also ends at 0!)
+
+4. Palindromes:
+   - "Is LRL a palindrome?" (yes)
+   - "Is LRLLRL a palindrome?" (yes)
+
+5. Patterns:
+   - "Can two different dances simplify to the same thing?" (yes! LLR and L both simplify to L)
+   - "What's the simplest way to reach position +3?" (RRR)
+
+Use these to deepen understanding. START with spin/non-commutativity - it's the most exciting new concept!`
 
 const SCRIPT = [
   {
@@ -189,13 +306,13 @@ const SCRIPT = [
   },
 ]
 
-export default function ChatInterface({ mode = 'pythagorean' }) {
+export default function ChatInterface({ onFirstMessage, onSpinEnabled }) {
   const [messages, setMessages] = useState([])
   const [inputValue, setInputValue] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [useScriptedMode, setUseScriptedMode] = useState(true)
   const timeoutsRef = useRef([])
   const messagesEndRef = useRef(null)
+  const hasAskedFirstQuestion = useRef(false)
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' })
@@ -205,48 +322,22 @@ export default function ChatInterface({ mode = 'pythagorean' }) {
     scrollToBottom()
   }, [messages])
 
-  // Scripted mode for pythagorean
-  useEffect(() => {
-    if (!useScriptedMode || mode !== 'pythagorean') return
-
-    const scheduleStep = (index) => {
-      if (index >= SCRIPT.length) return
-      const step = SCRIPT[index]
-
-      const timeoutId = window.setTimeout(() => {
-        setMessages((prev) => [...prev, { role: step.role, content: step.content }])
-        if (step.triggerOrbSequence) {
-          window.dispatchEvent(new Event('hypatia-orb-sequence'))
-        }
-        scheduleStep(index + 1)
-      }, step.delay * 1000)
-
-      timeoutsRef.current.push(timeoutId)
-    }
-
-    const initialTimeout = window.setTimeout(() => scheduleStep(0), 400)
-    timeoutsRef.current.push(initialTimeout)
-
-    return () => {
-      timeoutsRef.current.forEach((id) => window.clearTimeout(id))
-      timeoutsRef.current = []
-    }
-  }, [useScriptedMode, mode])
-
-  // Reset to live mode when switching to group theory
-  useEffect(() => {
-    if (mode === 'groupTheory') {
-      setUseScriptedMode(false)
-      setMessages([])
-    } else {
-      setUseScriptedMode(true)
-      setMessages([])
-    }
-  }, [mode])
-
   const parseAndTriggerAnimations = (text) => {
     let processedText = text
     let delay = 500 // Base delay for first action
+
+    // Check if spin (S) is used and enable it
+    if ((text.includes('S') || text.includes('s')) && text.includes('<animate>')) {
+      const animateRegex = /<animate>(.*?)<\/animate>/g
+      let match
+      while ((match = animateRegex.exec(text)) !== null) {
+        const moveSequence = match[1]
+        if (moveSequence.includes('S') || moveSequence.includes('s')) {
+          onSpinEnabled?.(true)
+          break
+        }
+      }
+    }
 
     // Check for <reset> tags first
     const resetRegex = /<reset\s*\/?>/g
@@ -273,7 +364,9 @@ export default function ChatInterface({ mode = 'pythagorean' }) {
 
     while ((match = animateRegex.exec(text)) !== null) {
       const moveSequence = match[1]
-      const moves = moveSequence.split('').filter(c => c === 'L' || c === 'l' || c === 'R' || c === 'r')
+      const moves = moveSequence.split('').filter(c =>
+        c === 'L' || c === 'l' || c === 'R' || c === 'r' || c === 'S' || c === 's'
+      )
 
       if (moves.length > 0) {
         animationCount++
@@ -310,6 +403,12 @@ export default function ChatInterface({ mode = 'pythagorean' }) {
     setMessages((prev) => [...prev, { role: 'user', content: userMessage }])
     setIsLoading(true)
 
+    // Show visualization on first message
+    if (!hasAskedFirstQuestion.current) {
+      hasAskedFirstQuestion.current = true
+      onFirstMessage?.()
+    }
+
     try {
       const response = await fetch('http://localhost:3001/api/chat', {
         method: 'POST',
@@ -321,7 +420,7 @@ export default function ChatInterface({ mode = 'pythagorean' }) {
             ...messages.map(m => ({ role: m.role, content: m.content })),
             { role: 'user', content: userMessage }
           ],
-          systemPrompt: mode === 'groupTheory' ? GROUP_THEORY_SYSTEM_PROMPT : 'You are Hypatia, a Socratic math tutor who teaches through asking questions and visualizations.'
+          systemPrompt: GROUP_THEORY_SYSTEM_PROMPT
         }),
       })
 
@@ -361,9 +460,7 @@ export default function ChatInterface({ mode = 'pythagorean' }) {
     <div className="flex flex-col h-full">
       <div className="p-4 border-b border-gray-800">
         <h1 className="text-xl font-bold">Hypatia</h1>
-        <p className="text-sm text-gray-400">
-          {mode === 'groupTheory' ? 'Group Theory Tutor' : 'Socratic Math Tutor'}
-        </p>
+        <p className="text-sm text-gray-400">Group Theory Tutor</p>
       </div>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
@@ -394,44 +491,114 @@ export default function ChatInterface({ mode = 'pythagorean' }) {
             </div>
           </div>
         )}
-        {messages.length === 0 && !isLoading && useScriptedMode && (
-          <div className="text-gray-500">Loading scripted conversation...</div>
-        )}
-        {messages.length === 0 && !isLoading && !useScriptedMode && (
-          <div className="text-gray-500 text-center p-8">
-            <p className="mb-2">Ask me a group theory question!</p>
-            <p className="text-sm">Try: "What is LLR?" or "Simplify LLRRL"</p>
+        {messages.length === 0 && !isLoading && (
+          <div className="text-gray-300 p-6">
+            <h3 className="text-lg font-semibold mb-4 text-cyan-400">Ask me about group theory!</h3>
+
+            <div className="space-y-4">
+              <div>
+                <h4 className="text-sm font-medium text-gray-400 mb-2">Simplification:</h4>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => setInputValue("Simplify LLRRL")}
+                    className="text-sm bg-gray-800 hover:bg-gray-700 px-3 py-1 rounded transition-colors"
+                  >
+                    Simplify LLRRL
+                  </button>
+                  <button
+                    onClick={() => setInputValue("What is LLR?")}
+                    className="text-sm bg-gray-800 hover:bg-gray-700 px-3 py-1 rounded transition-colors"
+                  >
+                    What is LLR?
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="text-sm font-medium text-gray-400 mb-2">Comparisons:</h4>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => setInputValue("Are LLR and L the same?")}
+                    className="text-sm bg-gray-800 hover:bg-gray-700 px-3 py-1 rounded transition-colors"
+                  >
+                    Are LLR and L the same?
+                  </button>
+                  <button
+                    onClick={() => setInputValue("Are LLR and RRL mirrors?")}
+                    className="text-sm bg-gray-800 hover:bg-gray-700 px-3 py-1 rounded transition-colors"
+                  >
+                    Are LLR and RRL mirrors?
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="text-sm font-medium text-gray-400 mb-2">Non-Commutativity (Order Matters!):</h4>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => setInputValue("What's LS?")}
+                    className="text-sm bg-purple-700 hover:bg-purple-600 px-3 py-1 rounded transition-colors"
+                  >
+                    What's LS?
+                  </button>
+                  <button
+                    onClick={() => setInputValue("What's SL?")}
+                    className="text-sm bg-purple-700 hover:bg-purple-600 px-3 py-1 rounded transition-colors"
+                  >
+                    What's SL?
+                  </button>
+                  <button
+                    onClick={() => setInputValue("Are LS and SL the same?")}
+                    className="text-sm bg-purple-700 hover:bg-purple-600 px-3 py-1 rounded transition-colors"
+                  >
+                    Are LS and SL the same?
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <h4 className="text-sm font-medium text-gray-400 mb-2">Patterns:</h4>
+                <div className="flex flex-wrap gap-2">
+                  <button
+                    onClick={() => setInputValue("Is LRLLRL a palindrome?")}
+                    className="text-sm bg-gray-800 hover:bg-gray-700 px-3 py-1 rounded transition-colors"
+                  >
+                    Is LRLLRL a palindrome?
+                  </button>
+                  <button
+                    onClick={() => setInputValue("What's the inverse of LLL?")}
+                    className="text-sm bg-gray-800 hover:bg-gray-700 px-3 py-1 rounded transition-colors"
+                  >
+                    What's the inverse of LLL?
+                  </button>
+                </div>
+              </div>
+            </div>
           </div>
         )}
         <div ref={messagesEndRef} />
       </div>
 
-      {!useScriptedMode ? (
-        <div className="p-4 border-t border-gray-800">
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={inputValue}
-              onChange={(e) => setInputValue(e.target.value)}
-              onKeyPress={handleKeyPress}
-              placeholder="Ask about group theory..."
-              className="flex-1 bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500"
-              disabled={isLoading}
-            />
-            <button
-              onClick={sendMessage}
-              disabled={isLoading || !inputValue.trim()}
-              className="bg-cyan-500 hover:bg-cyan-600 disabled:bg-gray-700 disabled:text-gray-500 text-white font-medium px-6 py-2 rounded-lg transition-colors"
-            >
-              Send
-            </button>
-          </div>
+      <div className="p-4 border-t border-gray-800">
+        <div className="flex gap-2">
+          <input
+            type="text"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyPress={handleKeyPress}
+            placeholder="Ask about group theory..."
+            className="flex-1 bg-gray-800 text-white rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-500"
+            disabled={isLoading}
+          />
+          <button
+            onClick={sendMessage}
+            disabled={isLoading || !inputValue.trim()}
+            className="bg-cyan-500 hover:bg-cyan-600 disabled:bg-gray-700 disabled:text-gray-500 text-white font-medium px-6 py-2 rounded-lg transition-colors"
+          >
+            Send
+          </button>
         </div>
-      ) : (
-        <div className="p-4 border-t border-gray-800 text-sm text-gray-500">
-          Scripted demo conversation. Switch to Group Theory for live chat.
-        </div>
-      )}
+      </div>
     </div>
   )
 }
