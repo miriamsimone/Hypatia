@@ -42,49 +42,111 @@ function createRobotCharacter() {
   body.position.y = 0.8
   robot.add(body)
 
-  // Arms with hand signs
+  // Arms
   const armGeometry = new THREE.CylinderGeometry(0.05, 0.05, 0.6, 8)
   const armMaterial = new THREE.MeshPhongMaterial({ color: 0x00ccff })
 
-  // Left arm with "L" sign
+  // Left arm
   const leftArm = new THREE.Mesh(armGeometry, armMaterial)
   leftArm.position.set(-0.3, 0.9, 0)
   leftArm.rotation.z = Math.PI / 6
   robot.add(leftArm)
 
-  // L sign on left hand
-  const lSignGeometry = new THREE.CircleGeometry(0.12, 16)
-  const lSignMaterial = new THREE.MeshBasicMaterial({ color: 0xff6b9d, side: THREE.DoubleSide })
-  const lSign = new THREE.Mesh(lSignGeometry, lSignMaterial)
-  lSign.position.set(-0.42, 0.65, 0)
-  robot.add(lSign)
-
-  // L text (using a simple shape)
-  const lTextGeometry = new THREE.BoxGeometry(0.02, 0.12, 0.01)
-  const lTextMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff })
-  const lText = new THREE.Mesh(lTextGeometry, lTextMaterial)
-  lText.position.set(-0.42, 0.65, 0.01)
-  robot.add(lText)
-
-  // Right arm with "R" sign
+  // Right arm
   const rightArm = new THREE.Mesh(armGeometry, armMaterial)
   rightArm.position.set(0.3, 0.9, 0)
   rightArm.rotation.z = -Math.PI / 6
   robot.add(rightArm)
 
-  // R sign on right hand
-  const rSignGeometry = new THREE.CircleGeometry(0.12, 16)
-  const rSignMaterial = new THREE.MeshBasicMaterial({ color: 0x6bff9d, side: THREE.DoubleSide })
-  const rSign = new THREE.Mesh(rSignGeometry, rSignMaterial)
-  rSign.position.set(0.42, 0.65, 0)
-  robot.add(rSign)
+  // Create orientation signs (will be shown/hidden based on whether spin is involved)
+  const signGroup = new THREE.Group()
+  signGroup.visible = false // Hidden by default
+  robot.add(signGroup)
+  robot.userData.signGroup = signGroup
 
-  // R text (using a simple shape)
-  const rTextGeometry = new THREE.BoxGeometry(0.02, 0.12, 0.01)
-  const rTextMaterial = new THREE.MeshBasicMaterial({ color: 0xffffff })
-  const rText = new THREE.Mesh(rTextGeometry, rTextMaterial)
-  rText.position.set(0.42, 0.65, 0.01)
-  robot.add(rText)
+  // Left hand sign - "a" (step left when facing forward)
+  const leftSignGeometry = new THREE.PlaneGeometry(0.25, 0.18)
+  const leftSignMaterial = new THREE.MeshBasicMaterial({
+    color: 0xff6b9d,
+    side: THREE.DoubleSide
+  })
+  const leftSign = new THREE.Mesh(leftSignGeometry, leftSignMaterial)
+  leftSign.position.set(-0.45, 0.65, 0)
+  signGroup.add(leftSign)
+
+  // Create "a" text using canvas texture (front)
+  const leftCanvas = document.createElement('canvas')
+  leftCanvas.width = 128
+  leftCanvas.height = 128
+  const leftCtx = leftCanvas.getContext('2d')
+  leftCtx.fillStyle = '#000000'
+  leftCtx.font = 'bold 100px serif'
+  leftCtx.textAlign = 'center'
+  leftCtx.textBaseline = 'middle'
+  leftCtx.fillText('a', 64, 64)
+
+  const leftTextTexture = new THREE.CanvasTexture(leftCanvas)
+  const leftTextMaterial = new THREE.MeshBasicMaterial({
+    map: leftTextTexture,
+    transparent: true
+  })
+  const leftTextMeshFront = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.15, 0.15),
+    leftTextMaterial
+  )
+  leftTextMeshFront.position.set(-0.45, 0.65, 0.01)
+  signGroup.add(leftTextMeshFront)
+
+  // Add text on back side too
+  const leftTextMeshBack = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.15, 0.15),
+    leftTextMaterial
+  )
+  leftTextMeshBack.position.set(-0.45, 0.65, -0.01)
+  leftTextMeshBack.rotation.y = Math.PI
+  signGroup.add(leftTextMeshBack)
+
+  // Right hand sign - "a⁻¹" (step right when facing forward)
+  const rightSignGeometry = new THREE.PlaneGeometry(0.25, 0.18)
+  const rightSignMaterial = new THREE.MeshBasicMaterial({
+    color: 0x6bff9d,
+    side: THREE.DoubleSide
+  })
+  const rightSign = new THREE.Mesh(rightSignGeometry, rightSignMaterial)
+  rightSign.position.set(0.45, 0.65, 0)
+  signGroup.add(rightSign)
+
+  // Create "a⁻¹" text using canvas texture (front)
+  const rightCanvas = document.createElement('canvas')
+  rightCanvas.width = 128
+  rightCanvas.height = 128
+  const rightCtx = rightCanvas.getContext('2d')
+  rightCtx.fillStyle = '#000000'
+  rightCtx.font = 'bold 80px serif'
+  rightCtx.textAlign = 'center'
+  rightCtx.textBaseline = 'middle'
+  rightCtx.fillText('a⁻¹', 64, 64)
+
+  const rightTextTexture = new THREE.CanvasTexture(rightCanvas)
+  const rightTextMaterial = new THREE.MeshBasicMaterial({
+    map: rightTextTexture,
+    transparent: true
+  })
+  const rightTextMeshFront = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.15, 0.15),
+    rightTextMaterial
+  )
+  rightTextMeshFront.position.set(0.45, 0.65, 0.01)
+  signGroup.add(rightTextMeshFront)
+
+  // Add text on back side too
+  const rightTextMeshBack = new THREE.Mesh(
+    new THREE.PlaneGeometry(0.15, 0.15),
+    rightTextMaterial
+  )
+  rightTextMeshBack.position.set(0.45, 0.65, -0.01)
+  rightTextMeshBack.rotation.y = Math.PI
+  signGroup.add(rightTextMeshBack)
 
   // Legs
   const legGeometry = new THREE.CylinderGeometry(0.06, 0.06, 0.7, 8)
@@ -137,6 +199,14 @@ function GroupTheoryScene({ spinEnabled = false }) {
   const [moveSequence, setMoveSequence] = useState([])
   const [isAnimating, setIsAnimating] = useState(false)
   const [isFacingBackward, setIsFacingBackward] = useState(false)
+
+  // Show/hide orientation signs based on whether spin is involved
+  useEffect(() => {
+    if (robotRef.current && robotRef.current.userData.signGroup) {
+      const hasSpinMove = moveSequence.some(move => move.toLowerCase() === 's')
+      robotRef.current.userData.signGroup.visible = spinEnabled || hasSpinMove
+    }
+  }, [moveSequence, spinEnabled])
 
   useEffect(() => {
     const mountElement = mountRef.current
