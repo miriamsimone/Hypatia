@@ -259,7 +259,7 @@ export default function ChatInterface({ onFirstMessage, onSpinEnabled }) {
 
       console.log('Sending to API:', requestBody)
 
-      const response = await fetch('http://localhost:3001/api/chat', {
+      const response = await fetch('/api/chat', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -286,7 +286,7 @@ export default function ChatInterface({ onFirstMessage, onSpinEnabled }) {
         ...prev,
         {
           role: 'assistant',
-          content: 'Sorry, I encountered an error. Make sure the server is running on port 3001.'
+          content: 'Sorry, I encountered an error. Please try again.'
         }
       ])
     } finally {

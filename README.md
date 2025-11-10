@@ -97,6 +97,35 @@ The entire teaching strategy is encoded in a ~500 line system prompt in `ChatInt
 - Example interactions
 - Error handling strategies
 
+## Deployment
+
+### Deploy to Vercel
+
+1. **Push to GitHub** (if not already done):
+```bash
+git init
+git add .
+git commit -m "Initial commit"
+git remote add origin <your-repo-url>
+git push -u origin main
+```
+
+2. **Deploy to Vercel**:
+   - Go to [vercel.com](https://vercel.com)
+   - Import your GitHub repository
+   - Vercel will auto-detect the Vite configuration
+   - Add environment variable: `ANTHROPIC_API_KEY=your_key_here`
+   - Click Deploy!
+
+3. **Set Environment Variables**:
+   In your Vercel project settings, add:
+   - `ANTHROPIC_API_KEY` - Your Anthropic API key
+
+The project is configured with:
+- `vercel.json` - Vercel deployment configuration
+- `api/` - Serverless functions for Claude API
+- Vite proxy for local development
+
 
 
 
